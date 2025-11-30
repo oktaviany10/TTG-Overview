@@ -1,8 +1,8 @@
 # REST API Node.js + Express + MySQL (Port 3307)
 
 Project ini adalah implementasi REST API sederhana menggunakan: -
-Node.js - Express.js - MySQL (XAMPP) dengan port 3307 -
-Thunder Client untuk testing API
+Node.js - Express.js - MySQL (XAMPP / Laragon) dengan port **3307** -
+Thunder Client / Postman untuk testing API
 
 ------------------------------------------------------------------------
 
@@ -10,13 +10,16 @@ Thunder Client untuk testing API
 
 ### 1️⃣ Clone repository
 
+``` bash
 git clone https://github.com/username/nama-project.git
 cd nama-project
-
+```
 
 ### 2️⃣ Install dependency
 
+``` bash
 npm install
+```
 
 ------------------------------------------------------------------------
 
@@ -26,15 +29,19 @@ npm install
 
 Masuk ke phpMyAdmin → SQL:
 
+``` sql
 CREATE DATABASE testdb;
+```
 
 ### 4️⃣ Buat tabel users
 
+``` sql
 CREATE TABLE users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100),
   email VARCHAR(100)
 );
+```
 
 ------------------------------------------------------------------------
 
@@ -53,9 +60,9 @@ Buat file `.env` di root project:
 
 ## 🔌 Setup File `config/db.js`
 
-Pastikan sudah memakai port 3307
+Pastikan sudah memakai port **3307**:
 
-'''
+``` js
 const mysql = require("mysql2");
 require("dotenv").config();
 
@@ -81,7 +88,7 @@ module.exports = db;
 
 Jalankan API:
 
-```
+``` bash
 node app.js
 ```
 
@@ -92,7 +99,7 @@ Output sukses:
 
 ------------------------------------------------------------------------
 
-# 🚀 Testing API via Thunder Client
+# 🚀 Testing API via Thunder Client / Postman
 
 ------------------------------------------------------------------------
 
@@ -114,7 +121,7 @@ Output sukses:
 
 Body JSON:
 
-```
+``` json
 {
   "name": "Phainon",
   "email": "phainon@example.com"
@@ -131,12 +138,6 @@ Body JSON:
 
 # 🎯 Catatan
 
--   Server menggunakan port 3000
--   Database MySQL menggunakan port 3307
+-   Server menggunakan port **3000**
+-   Database MySQL menggunakan port **3307**
 -   Gunakan Thunder Client VS Code untuk pengujian API
-
-------------------------------------------------------------------------
-
-# 🎉 Selesai
-
-REST API berhasil dijalankan dengan MySQL port 3307.
