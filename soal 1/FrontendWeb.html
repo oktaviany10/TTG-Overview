@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pendaftaran Pengguna</title>
+  <style>
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg, #f7fbff, #ffffff);
+      color: #111827;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(15,23,42,0.08);
+      padding: 28px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+    p.lead {
+      color: #4b5563;
+      margin-bottom: 18px;
+      font-size: 0.95rem;
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      display: block;
+      color: #374151;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      outline: none;
+      font-size: 0.95rem;
+      transition: border-color .12s, box-shadow .12s;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 6px;
+    }
+
+    .error {
+      color: #b91c1c;
+      font-size: 0.82rem;
+      margin-top: 6px;
+    }
+
+    .success {
+      color: #065f46;
+      font-size: 0.95rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .btn {
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .btn:active { transform: translateY(1px); }
+
+    /* cek input invalid/valid */
+    .invalid { border-color: #ef4444 !important; }
+    .valid { border-color: #10b981 !important; }
+
+    /* responsive: kecilkan padding pada layar kecil */
+    @media (max-width: 420px) {
+      .card { padding: 18px; border-radius: 10px; }
+      h1 { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <h1 id="title">Form Pendaftaran</h1>
+    <p class="lead">Isi data untuk mendaftar dibawah ini.</p>
+
+    <form id="regForm" novalidate>
+      <div class="form-row">
+        <label for="fullname">Nama lengkap</label>
+        <input id="fullname" name="fullname" type="text" placeholder="Contoh: Phainon" required aria-required="true" />
+        <div class="error" id="err-fullname" aria-live="polite"></div>
+      </div>
+
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="nama@gmail.com" required aria-required="true" />
+        <div class="error" id="err-email" aria-live="polite"></div>
+      </div>
+
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Minimal 8 karakter" required aria-required="true" />
+        <div class="hint">Password harus minimal 8 karakter.</div>
+        <div class="error" id="err-password" aria-live="polite"></div>
+      </div>
+
+      <div class="form-row">
+        <label for="confirm">Konfirmasi password</label>
+        <input id="confirm" name="confirm" type="password" placeholder="Ketik ulang password" required aria-required="true" />
+        <div class="error" id="err-confirm" aria-live="polite"></div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn">Daftar</button>
+    </form>
+
+    <div class="success" id="successMessage" role="status" aria-live="polite">
+      Pendaftaran Berhasil
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('regForm');
+    const fullname = document.getElementById('fullname');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const confirm = document.getElementById('confirm');
+
+    const errFull = document.getElementById('err-fullname');
+    const errEmail = document.getElementById('err-email');
+    const errPwd = document.getElementById('err-password');
+    const errConfirm = document.getElementById('err-confirm');
+    const successMsg = document.getElementById('successMessage');
+
+    function isValidEmail(value) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(value);
+    }
+
+    function setError(input, errElem, message) {
+      input.classList.remove('valid');
+      input.classList.add('invalid');
+      errElem.textContent = message;
+    }
+
+    function setValid(input, errElem) {
+      input.classList.remove('invalid');
+      input.classList.add('valid');
+      errElem.textContent = '';
+    }
+
+    function clearState(input, errElem) {
+      input.classList.remove('invalid', 'valid');
+      errElem.textContent = '';
+    }
+
+    // validasi real-time
+    email.addEventListener('input', () => {
+      if (!email.value) { clearState(email, errEmail); return; }
+      if (isValidEmail(email.value)) setValid(email, errEmail);
+      else setError(email, errEmail, 'Format email tidak valid.');
+    });
+
+    password.addEventListener('input', () => {
+      if (!password.value) { clearState(password, errPwd); return; }
+      if (password.value.length >= 8) setValid(password, errPwd);
+      else setError(password, errPwd, 'Password harus minimal 8 karakter.');
+      if (confirm.value) {
+        if (password.value === confirm.value) {
+          setValid(confirm, errConfirm);
+        } else {
+          setError(confirm, errConfirm, 'Password tidak cocok.');
+        }
+      }
+    });
+
+    confirm.addEventListener('input', () => {
+      if (!confirm.value) { clearState(confirm, errConfirm); return; }
+      if (confirm.value === password.value) setValid(confirm, errConfirm);
+      else setError(confirm, errConfirm, 'Password tidak cocok.');
+    });
+
+    fullname.addEventListener('input', () => {
+      if (!fullname.value) { clearState(fullname, errFull); return; }
+      if (fullname.value.trim().length >= 2) setValid(fullname, errFull);
+      else setError(fullname, errFull, 'Masukkan nama lengkap yang valid.');
+    });
+
+    // submit handler
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      successMsg.style.display = 'none';
+
+      let ok = true;
+
+      // validasi nama
+      if (!fullname.value.trim()) {
+        setError(fullname, errFull, 'Nama lengkap wajib diisi.');
+        ok = false;
+      } else if (fullname.value.trim().length < 2) {
+        setError(fullname, errFull, 'Nama terlalu singkat.');
+        ok = false;
+      } else {
+        setValid(fullname, errFull);
+      }
+
+      // validasi email
+      if (!email.value.trim()) {
+        setError(email, errEmail, 'Email wajib diisi.');
+        ok = false;
+      } else if (!isValidEmail(email.value.trim())) {
+        setError(email, errEmail, 'Format email tidak valid.');
+        ok = false;
+      } else {
+        setValid(email, errEmail);
+      }
+
+      // validasi password
+      if (!password.value) {
+        setError(password, errPwd, 'Password wajib diisi.');
+        ok = false;
+      } else if (password.value.length < 8) {
+        setError(password, errPwd, 'Password minimal 8 karakter.');
+        ok = false;
+      } else {
+        setValid(password, errPwd);
+      }
+
+      // validasi konfirmasi
+      if (!confirm.value) {
+        setError(confirm, errConfirm, 'Konfirmasi password wajib diisi.');
+        ok = false;
+      } else if (confirm.value !== password.value) {
+        setError(confirm, errConfirm, 'Password dan konfirmasi tidak cocok.');
+        ok = false;
+      } else {
+        setValid(confirm, errConfirm);
+      }
+
+      if (ok) {
+        successMsg.style.display = 'block';
+      } else {
+        const firstError = document.querySelector('.invalid');
+        if (firstError) firstError.focus();
+      }
+    });
+  </script>
+</body>
+</html>
